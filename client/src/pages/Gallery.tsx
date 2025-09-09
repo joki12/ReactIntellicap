@@ -1,7 +1,10 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { GalleryModal } from "@/components/GalleryModal";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Footer } from "@/components/Footer";
 
 export default function Gallery() {
   const { t } = useLanguage();
@@ -9,75 +12,49 @@ export default function Gallery() {
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [categoryFilter, setCategoryFilter] = useState("all");
 
-  const galleryImages = [
-    {
-      src: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-      alt: "Hackathon team collaboration",
-      title: "Hackathon 2024",
-      category: "hackathon"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-      alt: "Workshop presentation session",
-      title: "Workshop React",
-      category: "workshop"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-      alt: "Networking event",
-      title: "Événement Networking",
-      category: "networking"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-      alt: "Innovation lab workspace",
-      title: "Lab Innovation",
-      category: "lab"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-      alt: "Conference presentation",
-      title: "Conférence Tech",
-      category: "conference"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-      alt: "One-on-one mentoring session",
-      title: "Session Mentorat",
-      category: "mentoring"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-      alt: "Team collaboration",
-      title: "Collaboration d'équipe",
-      category: "teamwork"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-      alt: "Software development",
-      title: "Développement logiciel",
-      category: "development"
+  // Fetch gallery data from API
+  const { data: galleryItems, isLoading, error } = useQuery({
+    queryKey: ["/api/gallery"],
+    queryFn: async () => {
+      const response = await fetch("/api/gallery");
+      if (!response.ok) throw new Error("Failed to fetch gallery");
+      return response.json();
     }
-  ];
+  });
 
+  // Extract unique categories from gallery items
   const categories = [
     { key: "all", label: "Toutes" },
-    { key: "hackathon", label: "Hackathons" },
-    { key: "workshop", label: "Workshops" },
-    { key: "conference", label: "Conférences" },
-    { key: "networking", label: "Networking" },
-    { key: "mentoring", label: "Mentorat" },
-    { key: "lab", label: "Laboratoire" },
+    ...(galleryItems || []).reduce((acc: Array<{key: string, label: string}>, item: any) => {
+      if (item.category && !acc.find(cat => cat.key === item.category)) {
+        acc.push({
+          key: item.category,
+          label: item.category.charAt(0).toUpperCase() + item.category.slice(1)
+        });
+      }
+      return acc;
+    }, [])
   ];
 
   const filteredImages = categoryFilter === "all" 
-    ? galleryImages 
-    : galleryImages.filter(img => img.category === categoryFilter);
+    ? (galleryItems || [])
+    : (galleryItems || []).filter((item: any) => item.category === categoryFilter);
 
   const handleGalleryClick = (index: number) => {
     setGalleryIndex(index);
     setGalleryModalOpen(true);
   };
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-destructive mb-2">Erreur de chargement</h2>
+          <p className="text-muted-foreground">Impossible de charger la galerie</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -111,7 +88,13 @@ export default function Gallery() {
         </div>
 
         {/* Gallery Grid */}
-        {filteredImages.length === 0 ? (
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <Skeleton key={index} className="aspect-square rounded-lg" />
+            ))}
+          </div>
+        ) : filteredImages.length === 0 ? (
           <div className="text-center py-16">
             <h3 className="text-xl font-semibold text-foreground mb-2">Aucune image trouvée</h3>
             <p className="text-muted-foreground">
@@ -120,16 +103,16 @@ export default function Gallery() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" data-testid="gallery-grid">
-            {filteredImages.map((image, index) => (
+            {filteredImages.map((image: any, index: number) => (
               <div 
-                key={`${image.category}-${index}`}
+                key={image.id || `${image.category}-${index}`}
                 className="group relative overflow-hidden rounded-lg aspect-square cursor-pointer transform hover:scale-105 transition-all duration-300"
                 onClick={() => handleGalleryClick(index)}
                 data-testid={`gallery-item-${index}`}
               >
                 <img 
-                  src={image.src}
-                  alt={image.alt}
+                  src={image.imageUrl}
+                  alt={image.title}
                   className="w-full h-full object-cover"
                   loading="lazy"
                 />
@@ -138,6 +121,9 @@ export default function Gallery() {
                   <h4 className="font-semibold text-sm truncate" data-testid={`gallery-title-${index}`}>
                     {image.title}
                   </h4>
+                  {image.description && (
+                    <p className="text-xs opacity-90 truncate">{image.description}</p>
+                  )}
                 </div>
               </div>
             ))}
@@ -202,6 +188,8 @@ export default function Gallery() {
         images={filteredImages}
         initialIndex={galleryIndex}
       />
+
+      <Footer />
     </div>
   );
 }

@@ -11,6 +11,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { getAuthHeaders } from "@/lib/auth";
 import { Search, Filter, Calendar } from "lucide-react";
 import { Activity } from "@shared/schema";
+import { Footer } from "@/components/Footer";
 
 export default function Activities() {
   const { t } = useLanguage();
@@ -34,6 +35,7 @@ export default function Activities() {
         "POST",
         `/api/activities/${activityId}/register`,
         {},
+        getAuthHeaders(token)
       );
       return response.json();
     },
@@ -246,6 +248,8 @@ export default function Activities() {
           </div>
         )}
       </div>
+
+      <Footer />
     </div>
   );
 }

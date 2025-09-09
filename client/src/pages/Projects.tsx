@@ -4,17 +4,30 @@ import { useLanguage } from "@/hooks/useLanguage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ProjectCard } from "@/components/ProjectCard";
+import { ProjectDetailsModal } from "@/components/ProjectDetailsModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Search, Filter } from "lucide-react";
 import { Project } from "@shared/schema";
+import { Footer } from "@/components/Footer";
 
 export default function Projects() {
   const { t } = useLanguage();
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data: projects, isLoading, error } = useQuery<Project[]>({
-    queryKey: ["/api/projects", statusFilter === "all" ? undefined : statusFilter],
+    queryKey: ["/api/projects", statusFilter],
+    queryFn: async () => {
+      const url = statusFilter === "all" 
+        ? "/api/projects" 
+        : `/api/projects?status=${statusFilter}`;
+      
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Failed to fetch projects");
+      return response.json();
+    }
   });
 
   const filteredProjects = projects?.filter(project => {
@@ -27,8 +40,13 @@ export default function Projects() {
   }) || [];
 
   const handleProjectDetails = (project: Project) => {
-    // Could implement a modal or navigate to project detail page
-    console.log("View project details:", project);
+    setSelectedProject(project);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProject(null);
   };
 
   if (error) {
@@ -143,6 +161,15 @@ export default function Projects() {
           </div>
         )}
       </div>
+
+      {/* Project Details Modal */}
+      <ProjectDetailsModal
+        project={selectedProject}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
+
+      <Footer />
     </div>
   );
 }

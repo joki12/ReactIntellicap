@@ -16,6 +16,11 @@ import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Dashboard from "@/pages/Dashboard";
 import AdminPanel from "@/pages/AdminPanel";
+import Don from "@/pages/Don";
+import Profile from "@/pages/Profile";
+import MyActivities from "@/pages/MyActivities";
+import MyProjects from "@/pages/MyProjects";
+import Settings from "@/pages/Settings";
 
 function Router() {
   return (
@@ -31,6 +36,11 @@ function Router() {
         <Route path="/register" component={Register} />
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/admin" component={AdminPanel} />
+        <Route path="/don" component={Don} />
+        <Route path="/profile" component={Profile} />
+        <Route path="/my-activities" component={MyActivities} />
+        <Route path="/my-projects" component={MyProjects} />
+        <Route path="/settings" component={Settings} />
         <Route component={NotFound} />
       </Switch>
     </div>

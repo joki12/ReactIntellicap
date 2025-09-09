@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Drizzle DB Push",
+			"type": "shell",
+			"command": "npx drizzle-kit push:mysql --config=drizzle.config.ts",
+			"args": [],
+			"problemMatcher": []
+		}
+	]
+}

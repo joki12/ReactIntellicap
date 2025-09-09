@@ -6,8 +6,10 @@ interface AuthContextType {
   token: string | null;
   login: (user: User, token: string) => void;
   logout: () => void;
+  updateUser: (user: User) => void;
   isAuthenticated: boolean;
   isAdmin: boolean;
+  loading: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -19,6 +21,7 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
@@ -28,6 +31,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setToken(savedToken);
       setUser(JSON.parse(savedUser));
     }
+    
+    setLoading(false);
   }, []);
 
   const login = (user: User, token: string) => {
@@ -44,6 +49,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     localStorage.removeItem("user");
   };
 
+  const updateUser = (updatedUser: User) => {
+    setUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+  };
+
   const isAuthenticated = !!user && !!token;
   const isAdmin = user?.role === "admin";
 
@@ -54,8 +64,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         token, 
         login, 
         logout, 
+        updateUser,
         isAuthenticated, 
-        isAdmin 
+        isAdmin,
+        loading
       }}
     >
       {children}

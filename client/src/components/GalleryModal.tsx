@@ -10,9 +10,9 @@ interface GalleryModalProps {
   isOpen: boolean;
   onClose: () => void;
   images: Array<{
-    src: string;
-    alt: string;
+    imageUrl: string;
     title: string;
+    description?: string;
   }>;
   initialIndex: number;
 }
@@ -64,8 +64,8 @@ export function GalleryModal({ isOpen, onClose, images, initialIndex }: GalleryM
           
           {/* Image */}
           <img
-            src={currentImage.src}
-            alt={currentImage.alt}
+            src={currentImage.imageUrl}
+            alt={currentImage.description || currentImage.title}
             className="max-w-full max-h-full object-contain"
             data-testid={`gallery-image-${currentIndex}`}
           />

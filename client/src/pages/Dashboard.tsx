@@ -5,10 +5,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getAuthHeaders } from "@/lib/auth";
+import { apiRequest } from "@/lib/queryClient";
 import { 
   CalendarCheck, 
   Trophy, 
-  Clock, 
   User,
   Calendar,
   Settings,
@@ -19,31 +19,46 @@ import { Link, useLocation } from "wouter";
 import { useEffect } from "react";
 
 export default function Dashboard() {
-  const { user, isAuthenticated, token } = useAuth();
+  const { user, isAuthenticated, token, loading } = useAuth();
   const { t } = useLanguage();
   const [, setLocation] = useLocation();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!loading && !isAuthenticated) {
       setLocation("/login");
     }
-  }, [isAuthenticated, setLocation]);
+  }, [isAuthenticated, loading, setLocation]);
 
   const { data: participations, isLoading: participationsLoading } = useQuery({
     queryKey: ["/api/user/participations"],
     enabled: isAuthenticated,
     queryFn: async () => {
-      const response = await fetch("/api/user/participations", {
-        headers: getAuthHeaders(token)
-      });
-      if (!response.ok) throw new Error("Failed to fetch participations");
+      const authHeaders = getAuthHeaders(token);
+      const response = await apiRequest("GET", "/api/user/participations", undefined, authHeaders);
       return response.json();
     }
   });
 
-  const { data: stats } = useQuery({
-    queryKey: ["/api/stats"],
+  const { data: userStats, isLoading: userStatsLoading } = useQuery({
+    queryKey: ["/api/user/stats"],
+    enabled: isAuthenticated,
+    queryFn: async () => {
+      const authHeaders = getAuthHeaders(token);
+      const response = await apiRequest("GET", "/api/user/stats", undefined, authHeaders);
+      return response.json();
+    }
   });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-muted/50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Vérification de l'authentification...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated || !user) {
     return null;
@@ -91,19 +106,19 @@ export default function Dashboard() {
 
                 {/* Navigation */}
                 <nav className="space-y-2 pt-4 border-t border-border">
-                  <Button variant="ghost" className="w-full justify-start">
+                  <Button variant="ghost" className="w-full justify-start" onClick={() => setLocation("/profile")}>
                     <User className="w-4 h-4 mr-3" />
                     Profil
                   </Button>
-                  <Button variant="ghost" className="w-full justify-start">
+                  <Button variant="ghost" className="w-full justify-start" onClick={() => setLocation("/my-activities")}>
                     <Calendar className="w-4 h-4 mr-3" />
                     Mes activités
                   </Button>
-                  <Button variant="ghost" className="w-full justify-start">
+                  <Button variant="ghost" className="w-full justify-start" onClick={() => setLocation("/my-projects")}>
                     <BookOpen className="w-4 h-4 mr-3" />
                     Mes projets
                   </Button>
-                  <Button variant="ghost" className="w-full justify-start">
+                  <Button variant="ghost" className="w-full justify-start" onClick={() => setLocation("/settings")}>
                     <Settings className="w-4 h-4 mr-3" />
                     Paramètres
                   </Button>
@@ -115,7 +130,7 @@ export default function Dashboard() {
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-6">
             {/* Stats Cards */}
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-2 gap-4">
               <Card className="p-6">
                 <div className="flex items-center space-x-3">
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -140,20 +155,14 @@ export default function Dashboard() {
                     <Trophy className="text-secondary" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-foreground">3</div>
+                    <div className="text-2xl font-bold text-foreground">
+                      {userStatsLoading ? (
+                        <Skeleton className="h-8 w-8" />
+                      ) : (
+                        userStats?.completedProjects || 0
+                      )}
+                    </div>
                     <div className="text-sm text-muted-foreground">Projets terminés</div>
-                  </div>
-                </div>
-              </Card>
-              
-              <Card className="p-6">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center">
-                    <Clock className="text-accent" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-foreground">24h</div>
-                    <div className="text-sm text-muted-foreground">Temps formation</div>
                   </div>
                 </div>
               </Card>

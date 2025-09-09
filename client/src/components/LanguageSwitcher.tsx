@@ -25,13 +25,13 @@ export function LanguageSwitcher() {
           onClick={() => setLanguage("fr")}
           data-testid="language-fr"
         >
-          🇫🇷 Français
+          Français
         </DropdownMenuItem>
         <DropdownMenuItem 
           onClick={() => setLanguage("en")}
           data-testid="language-en"
         >
-          🇬🇧 English
+          English
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

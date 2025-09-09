@@ -22,6 +22,6 @@ export const authApi = {
   }
 };
 
-export const getAuthHeaders = (token: string | null) => {
-  return token ? { Authorization: `Bearer ${token}` } : {};
+export const getAuthHeaders = (token: string | null): Record<string, string> | undefined => {
+  return token ? { Authorization: `Bearer ${token}` } : undefined;
 };

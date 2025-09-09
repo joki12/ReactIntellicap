@@ -63,11 +63,22 @@ export function AuthModals({ showModal, onClose, onSwitch }: AuthModalsProps) {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const confirmPassword = formData.get("confirmPassword") as string;
+    const termsAccepted = formData.get("terms");
 
     if (password !== confirmPassword) {
       toast({
         title: t("common.error"),
         description: "Les mots de passe ne correspondent pas",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    if (!termsAccepted) {
+      toast({
+        title: t("common.error"),
+        description: "Veuillez accepter les conditions d'utilisation",
         variant: "destructive",
       });
       setIsLoading(false);
@@ -220,7 +231,7 @@ export function AuthModals({ showModal, onClose, onSwitch }: AuthModalsProps) {
             </div>
             
             <div className="flex items-start space-x-3">
-              <Checkbox id="terms" required />
+              <Checkbox id="terms" name="terms" required />
               <Label htmlFor="terms" className="text-sm">
                 {t("auth.acceptTerms")}
               </Label>

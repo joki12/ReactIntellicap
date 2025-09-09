@@ -32,20 +32,20 @@ export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
   };
 
   return (
-    <Card 
-      className="group overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer"
+    <Card
+      className="group overflow-hidden hover:shadow-lg transition-all duration-300"
       data-testid={`project-card-${project.id}`}
     >
       {project.imageUrl && (
         <div className="relative h-48 overflow-hidden">
-          <img 
-            src={project.imageUrl} 
+          <img
+            src={project.imageUrl}
             alt={project.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         </div>
       )}
-      
+
       <CardContent className="p-6 space-y-4">
         <div className="flex items-center justify-between">
           <Badge className={getStatusColor(project.status)}>
@@ -53,22 +53,22 @@ export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
           </Badge>
           <span className="text-sm text-muted-foreground">{project.domain}</span>
         </div>
-        
-        <h3 
+
+        <h3
           className="text-xl font-semibold text-foreground group-hover:text-primary transition-colors"
           data-testid={`project-title-${project.id}`}
         >
           {project.title}
         </h3>
-        
-        <p 
+
+        <p
           className="text-muted-foreground line-clamp-3"
           data-testid={`project-description-${project.id}`}
         >
           {project.description}
         </p>
       </CardContent>
-      
+
       <CardFooter className="p-6 pt-0 flex items-center justify-between">
         <div className="flex items-center space-x-2 text-muted-foreground">
           <Users className="w-4 h-4" />
@@ -76,15 +76,15 @@ export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
             {project.participants} {t("projects.participants")}
           </span>
         </div>
-        
-        <Button 
+
+        <Button
           variant="ghost"
           size="sm"
           className="text-primary hover:text-primary/80"
           onClick={() => onViewDetails?.(project)}
           data-testid={`project-learn-more-${project.id}`}
         >
-          {t("projects.learnMore")}
+          En savoir plus
         </Button>
       </CardFooter>
     </Card>

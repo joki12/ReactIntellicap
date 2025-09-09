@@ -23,7 +23,7 @@ const translations = {
     
     // Hero section
     "hero.title": "Empowering Innovation & Education",
-    "hero.subtitle": "La Fondation Intellcap soutient l'innovation technologique et l'éducation en offrant mentorat, espaces de travail et financement aux entrepreneurs et étudiants.",
+    "hero.subtitle": "La foundation Intellcap soutient l'innovation technologique et l'éducation en offrant mentorat, espaces de travail et financement aux entrepreneurs et étudiants.",
     "hero.discover": "Découvrir nos projets",
     "hero.donate": "Faire un don",
     
@@ -111,7 +111,7 @@ const translations = {
     
     // Hero section
     "hero.title": "Empowering Innovation & Education",
-    "hero.subtitle": "Fondation Intellcap supports technological innovation and education by providing mentorship, workspaces and funding to entrepreneurs and students.",
+    "hero.subtitle": "foundation Intellcap supports technological innovation and education by providing mentorship, workspaces and funding to entrepreneurs and students.",
     "hero.discover": "Discover our projects",
     "hero.donate": "Donate",
     

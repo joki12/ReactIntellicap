@@ -32,6 +32,7 @@ export function Navigation() {
     { href: "/projects", label: t("nav.projects") },
     { href: "/activities", label: t("nav.activities") },
     { href: "/gallery", label: t("nav.gallery") },
+    { href: "/don", label: "Don" },
     { href: "/contact", label: t("nav.contact") },
   ];
 
@@ -50,7 +51,7 @@ export function Navigation() {
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                 <GraduationCap className="text-primary-foreground text-lg" />
               </div>
-              <span className="text-xl font-bold text-foreground">Fondation Intellcap</span>
+              <span className="text-xl font-bold text-foreground">foundation Intellcap</span>
             </Link>
             
             {/* Desktop Navigation */}

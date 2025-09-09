@@ -22,6 +22,7 @@ import {
   DoorOpen,
   UserCheck
 } from "lucide-react";
+import { Footer } from "@/components/Footer";
 
 export default function Contact() {
   const { t } = useLanguage();
@@ -146,7 +147,7 @@ export default function Contact() {
               </div>
               <div>
                 <h3 className="font-medium text-foreground mb-1">{t("contact.phone")}</h3>
-                <p className="text-sm text-muted-foreground">+212 5XX-XXXX-XX</p>
+                <p className="text-sm text-muted-foreground">+212 698-5541-00</p>
               </div>
             </CardContent>
           </Card>
@@ -431,6 +432,8 @@ export default function Contact() {
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 }
